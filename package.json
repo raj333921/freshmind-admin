@@ -1,33 +1,36 @@
 {
-  "name": "freshmind-admin",
+  "name": "starter",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
-    "type-check": "tsc --noEmit",
-    "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
-    "format": "prettier --write ./src"
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "ra-data-simple-rest": "^4.13.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.13.7",
+    "@mui/x-data-grid": "^6.9.2",
+    "@tanstack/react-query": "^4.29.19",
     "react": "^18.2.0",
-    "react-admin": "^4.13.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.15.0",
+    "recharts": "^2.7.2",
+    "sass": "^1.63.6"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^5.60.1",
-    "@typescript-eslint/eslint-plugin": "^5.60.1",
-    "@types/node": "^18.16.1",
-    "@types/react": "^18.0.22",
-    "@types/react-dom": "^18.0.7",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react": "^4.0.1",
-    "eslint": "^8.43.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-react": "^7.32.2",
+    "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.8.8",
-    "typescript": "^5.1.6",
-    "vite": "^4.3.9"
+    "eslint-plugin-react-refresh": "^0.4.1",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.0"
   }
 }
