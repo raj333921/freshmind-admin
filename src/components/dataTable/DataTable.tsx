@@ -37,7 +37,7 @@ const DataTable = (props: Props) => {
   const actionColumn: GridColDef = {
     field: "action",
     headerName: "Action",
-    width: 200,
+    width: 150,
     renderCell: (params) => {
       return (
         <div className="action">
@@ -73,8 +73,7 @@ const DataTable = (props: Props) => {
             quickFilterProps: { debounceMs: 500 },
           },
         }}
-        pageSizeOptions={[5]}
-        checkboxSelection
+        pageSizeOptions={[10]}
         disableRowSelectionOnClick
         disableColumnFilter
         disableDensitySelector

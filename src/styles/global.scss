@@ -17,6 +17,14 @@ a {
   font-family: "Inter", sans-serif;
   background-color: $main-bg;
   color: $main-color;
+
+  .footer {
+    text-align: center;
+    padding: 10px;
+    position: absolute;
+    bottom: 0; /* Position at the bottom */
+    width: 100%; /* Full width */
+  }
 }
 
 .container {
