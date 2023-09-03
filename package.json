@@ -19,11 +19,13 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
     "recharts": "^2.7.2",
-    "sass": "^1.63.6"
+    "sass": "^1.63.6",
+    "underscore": "^1.13.6"
   },
   "devDependencies": {
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
+    "@types/underscore": "^1.11.9",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react": "^4.0.1",

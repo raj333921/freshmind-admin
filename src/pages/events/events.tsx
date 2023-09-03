@@ -3,7 +3,8 @@ import "./Events.scss";
 import DataTable from "../../components/dataTable/DataTable";
 import Add from "../../components/add/Add";
 import { GridColDef } from "@mui/x-data-grid";
-import { events } from "../../data";
+import {useQuery} from "@tanstack/react-query";
+import * as _ from 'underscore';
 
 const columns: GridColDef[] = [
     {
@@ -12,7 +13,7 @@ const columns: GridColDef[] = [
         width: 90
     },
     {
-        field: "img",
+        field: "banner",
         headerName: "Image",
         width: 100,
         renderCell: (params) => {
@@ -20,17 +21,17 @@ const columns: GridColDef[] = [
         },
     },
     {
-        field: "name",
+        field: "eventName",
         type: "string",
         headerName: "Name",
         width: 150,
     },
-    {
-        field: "description",
-        type: "string",
-        headerName: "Description",
-        width: 250,
-    },
+    // {
+    //     field: "description",
+    //     type: "string",
+    //     headerName: "Description",
+    //     width: 250,
+    // },
     {
         field: "type",
         type: "string",
@@ -38,13 +39,13 @@ const columns: GridColDef[] = [
         width: 150,
     },
     {
-        field: "startDate",
+        field: "eventStartDate",
         type: "string",
         headerName: "StartDate",
         width: 200,
     },
     {
-        field: "endDate",
+        field: "eventEndDate",
         type: "string",
         headerName: "EndDate",
         width: 200,
@@ -61,12 +62,12 @@ const columns: GridColDef[] = [
         headerName: "Website",
         width: 150,
     },
-    {
-        field: "instagram",
-        type: "string",
-        headerName: "Instagram",
-        width: 150,
-    },
+    // {
+    //     field: "instagram",
+    //     type: "string",
+    //     headerName: "Instagram",
+    //     width: 150,
+    // },
     {
         field: "facebook",
         type: "string",
@@ -74,11 +75,23 @@ const columns: GridColDef[] = [
         width: 150,
     },
     {
-        field: "googleForm",
+        field: "created_at",
         type: "string",
-        headerName: "Google Form",
-        width: 150,
+        headerName: "created At",
+        width: 200,
     },
+    {
+        field: "updated_at",
+        type: "string",
+        headerName: "updated At",
+        width: 200,
+    },
+    // {
+    //     field: "googleForm",
+    //     type: "string",
+    //     headerName: "Google Form",
+    //     width: 150,
+    // },
 ];
 
 const Events = () => {
@@ -86,13 +99,18 @@ const Events = () => {
 
     // TEST THE API
 
-    // const { isLoading, data } = useQuery({
-    //   queryKey: ["allevents"],
-    //   queryFn: () =>
-    //     fetch("http://localhost:8800/api/events").then(
-    //       (res) => res.json()
-    //     ),
-    // });
+    const { isLoading, data } = useQuery({
+      queryKey: ["allevents"],
+      queryFn: () =>
+        fetch("https://sachadigi.com/freshdb/events").then(
+          (res) => res.json()
+        ),
+    });
+
+    const desiredFormat = _.map(data, (item) => ({
+        id: item.eventId,
+        ..._.omit(item, ['eventId']), // Keep other properties as they are
+    }));
 
     return (
         <div className="events">
@@ -100,15 +118,15 @@ const Events = () => {
                 <h1>Events</h1>
                 <button onClick={() => setOpen(true)}>Add New Events</button>
             </div>
-            <DataTable slug="events" columns={columns} rows={events} />
+            {/*<DataTable slug="events" columns={columns} rows={data} />*/}
             {/* TEST THE API */}
 
-            {/* {isLoading ? (
+            {isLoading ? (
         "Loading..."
       ) : (
-        <DataTable slug="events" columns={columns} rows={data} />
-      )} */}
-            {open && <Add slug="product" columns={columns} setOpen={setOpen} />}
+        <DataTable slug="events" columns={columns} rows={desiredFormat} />
+      )}
+            {open && <Add slug="event" columns={columns} setOpen={setOpen} />}
         </div>
     );
 };

@@ -3,7 +3,9 @@ import "./Bookmarks.scss";
 import DataTable from "../../components/dataTable/DataTable";
 import Add from "../../components/add/Add";
 import { GridColDef } from "@mui/x-data-grid";
-import { bookmarks } from "../../data";
+import {useQuery} from "@tanstack/react-query";
+import * as _ from "underscore";
+//import {bookmarks} from "../../data.ts";
 
 const columns: GridColDef[] = [
     {
@@ -11,49 +13,62 @@ const columns: GridColDef[] = [
         headerName: "ID",
         width: 90
     },
+
+    // {
+    //     field: "indexesLoc",
+    //     headerName: "Image",
+    //     width: 100,
+    //     renderCell: (params) => {
+    //         return <img src={params.row.img || "/noavatar.png"} alt="" />;
+    //     },
+    // },
     {
-        field: "img",
-        headerName: "Image",
-        width: 100,
-        renderCell: (params) => {
-            return <img src={params.row.img || "/noavatar.png"} alt="" />;
-        },
-    },
-    {
-        field: "name",
+        field: "indexesName",
         type: "string",
         headerName: "Name",
         width: 150,
     },
     {
-        field: "description",
+        field: "indexesDesc",
         type: "string",
         headerName: "Description",
         width: 250,
     },
     {
-        field: "category",
+        field: "indexesURL",
         type: "string",
-        headerName: "Category",
+        headerName: "URL",
         width: 150,
     },
     {
-        field: "hyperlinks",
+        field: "indexesType",
         type: "string",
-        headerName: "Hyperlinks",
+        headerName: "Type",
         width: 200,
     },
     {
-        field: "information",
+        field: "categoryId",
         type: "string",
-        headerName: "Information",
-        width: 200,
-    },
-    {
-        field: "isActive",
-        type: "boolean",
-        headerName: "IsActive",
+        headerName: "Category Id",
         width: 100,
+    },
+    {
+        field: "indexesLoc",
+        type: "string",
+        headerName: "Location",
+        width: 150,
+    },
+    {
+        field: "created_at",
+        type: "string",
+        headerName: "created At",
+        width: 200,
+    },
+    {
+        field: "updated_at",
+        type: "string",
+        headerName: "updated At",
+        width: 200,
     },
 ];
 
@@ -62,13 +77,18 @@ const Bookmarks = () => {
 
     // TEST THE API
 
-    // const { isLoading, data } = useQuery({
-    //   queryKey: ["allbookmarks"],
-    //   queryFn: () =>
-    //     fetch("http://localhost:8800/api/bookmarks").then(
-    //       (res) => res.json()
-    //     ),
-    // });
+    const { isLoading, data } = useQuery({
+      queryKey: ["allbookmarks"],
+      queryFn: () =>
+        fetch("https://sachadigi.com/freshdb/indexes").then(
+          (res) => res.json()
+        ),
+    });
+
+    const desiredFormat = _.map(data, (item) => ({
+        id: item.indexesId,
+        ..._.omit(item, ['indexesId']), // Keep other properties as they are
+    }));
 
     return (
         <div className="bookmarks">
@@ -76,15 +96,15 @@ const Bookmarks = () => {
                 <h1>Bookmarks</h1>
                 <button onClick={() => setOpen(true)}>Add New Bookmarks</button>
             </div>
-            <DataTable slug="bookmarks" columns={columns} rows={bookmarks} />
+            {/*<DataTable slug="bookmarks" columns={columns} rows={bookmarks} />*/}
             {/* TEST THE API */}
 
-            {/* {isLoading ? (
+           {isLoading ? (
         "Loading..."
       ) : (
-        <DataTable slug="bookmarks" columns={columns} rows={data} />
-      )} */}
-            {open && <Add slug="product" columns={columns} setOpen={setOpen} />}
+        <DataTable slug="bookmark" columns={columns} rows={desiredFormat} />
+      )}
+            {open && <Add slug="bookmark" columns={columns} setOpen={setOpen} />}
         </div>
     );
 };

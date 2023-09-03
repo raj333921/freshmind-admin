@@ -70,7 +70,7 @@ const Faqs = () => {
       ) : (
         <DataTable slug="faqs" columns={columns} rows={data} />
       )} */}
-            {open && <Add slug="product" columns={columns} setOpen={setOpen} />}
+            {open && <Add slug="faq" columns={columns} setOpen={setOpen} />}
         </div>
     );
 };
