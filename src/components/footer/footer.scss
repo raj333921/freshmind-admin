@@ -1,4 +1,4 @@
-.footer{
+.footer {
   display: flex;
   position: relative;
   bottom: 0;
@@ -6,13 +6,13 @@
   justify-content: space-between;
   padding: 30px;
 
-  span{
+  span {
 
-    &:first-child{
+    &:first-child {
       font-weight: bold;
     }
 
-    &:last-child{
+    &:last-child {
       font-size: 14px;
     }
   }

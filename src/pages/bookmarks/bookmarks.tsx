@@ -1,8 +1,8 @@
-import { useState } from "react";
+import {useState} from "react";
 import "./Bookmarks.scss";
 import DataTable from "../../components/dataTable/DataTable";
 import Add from "../../components/add/Add";
-import { GridColDef } from "@mui/x-data-grid";
+import {GridColDef} from "@mui/x-data-grid";
 import {useQuery} from "@tanstack/react-query";
 import * as _ from "underscore";
 //import {bookmarks} from "../../data.ts";
@@ -16,7 +16,7 @@ const columns: GridColDef[] = [
 
     // {
     //     field: "indexesLoc",
-    //     headerName: "Image",
+    //     headerName: "Image",-
     //     width: 100,
     //     renderCell: (params) => {
     //         return <img src={params.row.img || "/noavatar.png"} alt="" />;
@@ -58,18 +58,7 @@ const columns: GridColDef[] = [
         headerName: "Location",
         width: 150,
     },
-    {
-        field: "created_at",
-        type: "string",
-        headerName: "created At",
-        width: 200,
-    },
-    {
-        field: "updated_at",
-        type: "string",
-        headerName: "updated At",
-        width: 200,
-    },
+
 ];
 
 const Bookmarks = () => {
@@ -77,12 +66,12 @@ const Bookmarks = () => {
 
     // TEST THE API
 
-    const { isLoading, data } = useQuery({
-      queryKey: ["allbookmarks"],
-      queryFn: () =>
-        fetch("https://sachadigi.com/freshdb/indexes").then(
-          (res) => res.json()
-        ),
+    const {isLoading, data} = useQuery({
+        queryKey: ["allindexes"],
+        queryFn: () =>
+            fetch("https://sachadigi.com/freshdb/indexes").then(
+                (res) => res.json()
+            ),
     });
 
     const desiredFormat = _.map(data, (item) => ({
@@ -99,12 +88,12 @@ const Bookmarks = () => {
             {/*<DataTable slug="bookmarks" columns={columns} rows={bookmarks} />*/}
             {/* TEST THE API */}
 
-           {isLoading ? (
-        "Loading..."
-      ) : (
-        <DataTable slug="bookmark" columns={columns} rows={desiredFormat} />
-      )}
-            {open && <Add slug="bookmark" columns={columns} setOpen={setOpen} />}
+            {isLoading ? (
+                "Loading..."
+            ) : (
+                <DataTable slug="indexe" edit="indexesInsert" delete="indexes" columns={columns} rows={desiredFormat}/>
+            )}
+            {open && <Add slug="indexe" add="indexesInsert" columns={columns} setOpen={setOpen}/>}
         </div>
     );
 };

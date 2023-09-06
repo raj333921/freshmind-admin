@@ -13,6 +13,7 @@ import Bookmarks from "./pages/bookmarks/bookmarks.tsx";
 import Events from "./pages/events/events.tsx";
 import Faqs from "./pages/faqs/faqs.tsx";
 import Users from "./pages/users/Users.tsx";
+import Categories from "./pages/categories/categories.tsx";
 
 
 const queryClient = new QueryClient();
@@ -49,6 +50,10 @@ function App() {
                 {
                     path: "/bookmarks",
                     element: <Bookmarks/>,
+                },
+                {
+                    path: "/categories",
+                    element: <Categories/>,
                 },
                 {
                     path: "/events",

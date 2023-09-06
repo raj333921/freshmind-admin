@@ -1,27 +1,34 @@
 import {
     DataGrid,
     GridColDef,
-    GridToolbar,
+    GridToolbar, useGridApiRef,
 } from "@mui/x-data-grid";
 import "./dataTable.scss";
-import {Link} from "react-router-dom";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useState} from "react";
+import Edit from "../edit/edit.tsx";
 // import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
     columns: GridColDef[];
     rows: object[];
+    edit: string;
+    delete: string;
     slug: string;
 };
 
 const DataTable = (props: Props) => {
 
-    // TEST THE API
-
+    const [open, setOpen] = useState(false);
     const queryClient = useQueryClient();
-    const mutation = useMutation({
+
+    function sleep(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    const mutationDelete = useMutation({
         mutationFn: (id: number) => {
-            return fetch(`https://sachadigi.com/freshdb/events/${props.slug}/${id}`, {
+            return fetch(`https://sachadigi.com/freshdb/${props.delete}/${id}`, {
                 method: "delete",
             });
         },
@@ -30,9 +37,30 @@ const DataTable = (props: Props) => {
         }
     });
 
-    const handleDelete = (id: number) => {
+    // const mutationEdit = useMutation({
+    //     mutationFn: (id: number) => {
+    //         return fetch(`https://sachadigi.com/freshdb/${props.delete}/${id}`, {
+    //             method: "delete",
+    //         });
+    //     },
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries([`all${props.slug}`]);
+    //     }
+    // });
+
+    const handleDelete = async (id: number) => {
         //delete the item
-        mutation.mutate(id)
+        mutationDelete.mutate(id)
+
+        await sleep(1000);
+        window.location.reload();
+    };
+
+    const [editRowId, setEditRowId] = useState<number | null>(null);
+
+    const handleEdit = (rowId:number) => {
+        setEditRowId(rowId);
+        setOpen(true);
     };
 
     const actionColumn: GridColDef = {
@@ -40,11 +68,10 @@ const DataTable = (props: Props) => {
         headerName: "Action",
         width: 150,
         renderCell: (params) => {
+
             return (
                 <div className="action">
-                    <Link to={`/${props.slug}/${params.row.id}`}>
-                        <img src="/view.svg" alt=""/>
-                    </Link>
+                    <img src="/view.svg" alt="" onClick={() => handleEdit(params.row.id)}/>
                     <div className="delete" onClick={() => handleDelete(params.row.id)}>
                         <img src="/delete.svg" alt=""/>
                     </div>
@@ -53,12 +80,26 @@ const DataTable = (props: Props) => {
         },
     };
 
+    const apiRef = useGridApiRef();
+
+    const handleRowEditStart = (event:any) => {
+        event.defaultMuiPrevented = true;
+    };
+
+    const handleRowEditStop = ( event:any) => {
+        event.defaultMuiPrevented = true;
+    };
+
     return (
         <div className="dataTable">
             <DataGrid
                 className="dataGrid"
                 rows={props.rows}
                 columns={[...props.columns, actionColumn]}
+                editMode={"row"}
+                apiRef={apiRef}
+                onRowEditStart={handleRowEditStart}
+                onRowEditStop={handleRowEditStop}
                 initialState={{
                     pagination: {
                         paginationModel: {
@@ -68,7 +109,7 @@ const DataTable = (props: Props) => {
                 }}
                 slots={{toolbar: GridToolbar}}
                 slotProps={{
-                    toolbar: {
+                    toolbar: {apiRef,
                         showQuickFilter: true,
                         quickFilterProps: {debounceMs: 500},
                     },
@@ -79,6 +120,7 @@ const DataTable = (props: Props) => {
                 disableDensitySelector
                 disableColumnSelector
             />
+            {open && <Edit slug={props.slug} edit={props.edit} columns={props.columns} setOpen={setOpen} rowId={editRowId} rows={props.rows}/>}
         </div>
     );
 };

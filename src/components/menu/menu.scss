@@ -14,10 +14,11 @@
       color: $soft-color;
       text-transform: uppercase;
 
-      @include lg{
+      @include lg {
         display: none;
       }
     }
+
     img {
       width: 26px;
       height: 26px;
@@ -35,8 +36,8 @@
         background-color: $soft-bg;
       }
 
-      .listItemTitle{
-        @include lg{
+      .listItemTitle {
+        @include lg {
           display: none;
         }
       }
