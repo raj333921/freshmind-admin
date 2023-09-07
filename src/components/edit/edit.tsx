@@ -1,19 +1,21 @@
 import {GridColDef} from "@mui/x-data-grid";
-import "./add.scss";
+import "./edit.scss";
 import React, {ChangeEvent, useState} from "react";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 type Props = {
     slug: string;
-    add: string;
+    edit: string;
     columns: GridColDef[];
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    rows: object[];
+    rowId:any;
 };
 
 
 type FormData = Record<string, any>;
 
-const Add = (props: Props) => {
+const Edit = (props: Props) => {
 
     const queryClient = useQueryClient();
     const [formData, setFormData] = useState<FormData>({});
@@ -45,7 +47,7 @@ const Add = (props: Props) => {
 
     const mutationFunction = async (formData: FormData) => {
         // Use formData as the request body
-        return fetch(`https://sachadigi.com/freshdb/${props.add}`, {
+        return fetch(`https://sachadigi.com/freshdb/${props.edit}`, {
             method: "post",
             headers: {
                 Accept: "application/json",
@@ -62,15 +64,15 @@ const Add = (props: Props) => {
     });
 
     return (
-        <div className="add">
+        <div className="edit">
             <div className="modal">
         <span className="close" onClick={() => props.setOpen(false)}>
           X
         </span>
-                <h1>Add new {props.slug}</h1>
+                <h1>Edit {props.slug}</h1>
                 <form onSubmit={handleSubmit}>
                     {props.columns
-                        .filter((item) => item.field !== "id" && item.field !== "img")
+                        .filter((item) => item.field !== "img")
                         .map((column) => (
                             <div className="item">
                                 <label>{column.headerName}</label>
@@ -86,4 +88,4 @@ const Add = (props: Props) => {
     );
 };
 
-export default Add;
+export default Edit;

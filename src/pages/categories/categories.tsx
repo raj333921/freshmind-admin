@@ -1,11 +1,11 @@
 import {useState} from "react";
-import "./Faqs.scss";
+import "./Categories.scss";
 import DataTable from "../../components/dataTable/DataTable";
 import Add from "../../components/add/Add";
 import {GridColDef} from "@mui/x-data-grid";
 import {useQuery} from "@tanstack/react-query";
-// import { faqs } from "../../data";
 import * as _ from "underscore";
+//import {categories} from "../../data.ts";
 
 const columns: GridColDef[] = [
     {
@@ -13,73 +13,69 @@ const columns: GridColDef[] = [
         headerName: "ID",
         width: 90
     },
+
     {
-        field: "faqQuestion",
+        field: "categoryName",
         type: "string",
-        headerName: "Question",
+        headerName: "Name",
         width: 150,
     },
     {
-        field: "faqAnswer",
+        field: "categoryDesc",
         type: "string",
-        headerName: "Answer",
+        headerName: "Description",
         width: 250,
     },
     {
-        field: "faqAuthor",
+        field: "categoryType",
         type: "string",
-        headerName: "Author",
-        width: 150,
-    },
-    {
-        field: "faqCategory",
-        type: "string",
-        headerName: "Category",
-        width: 150,
-    },
-    {
-        field: "faqLoc",
-        type: "String",
-        headerName: "Location",
+        headerName: "Type",
         width: 200,
     },
+    {
+        field: "categoryLoc",
+        type: "string",
+        headerName: "Location",
+        width: 150,
+    },
+
 ];
 
-const Faqs = () => {
+const Categories = () => {
     const [open, setOpen] = useState(false);
 
     // TEST THE API
 
     const {isLoading, data} = useQuery({
-        queryKey: ["allfaqs"],
+        queryKey: ["allCategories"],
         queryFn: () =>
-            fetch("https://sachadigi.com/freshdb/faq").then(
+            fetch("https://sachadigi.com/freshdb/categories").then(
                 (res) => res.json()
             ),
     });
 
     const desiredFormat = _.map(data, (item) => ({
-        id: item.faqId,
-        ..._.omit(item, ['faqId']), // Keep other properties as they are
+        id: item.categoryId,
+        ..._.omit(item, ['categoryId']), // Keep other properties as they are
     }));
 
     return (
-        <div className="faqs">
+        <div className="categories">
             <div className="info">
-                <h1>Faqs</h1>
-                <button onClick={() => setOpen(true)}>Add New Faqs</button>
+                <h1>Categories</h1>
+                <button onClick={() => setOpen(true)}>Add New Categories</button>
             </div>
-            {/*<DataTable slug="faqs" columns={columns} rows={faqs} />*/}
+            {/*<DataTable slug="categories" columns={columns} rows={categories} />*/}
             {/* TEST THE API */}
 
             {isLoading ? (
                 "Loading..."
             ) : (
-                <DataTable slug="faq" edit="faq" delete="faq" columns={columns} rows={desiredFormat}/>
+                <DataTable slug="categories" edit="category" delete="category" columns={columns} rows={desiredFormat}/>
             )}
-            {open && <Add slug="faq" add="faqInsert" columns={columns} setOpen={setOpen}/>}
+            {open && <Add slug="category" add="categoryInsert" columns={columns} setOpen={setOpen}/>}
         </div>
     );
 };
 
-export default Faqs;
+export default Categories;

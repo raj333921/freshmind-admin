@@ -1,8 +1,8 @@
-import { useState } from "react";
+import {useState} from "react";
 import "./Events.scss";
 import DataTable from "../../components/dataTable/DataTable";
 import Add from "../../components/add/Add";
-import { GridColDef } from "@mui/x-data-grid";
+import {GridColDef} from "@mui/x-data-grid";
 import {useQuery} from "@tanstack/react-query";
 import * as _ from 'underscore';
 
@@ -17,7 +17,7 @@ const columns: GridColDef[] = [
         headerName: "Image",
         width: 100,
         renderCell: (params) => {
-            return <img src={params.row.img || "/noavatar.png"} alt="" />;
+            return <img src={params.row.img || "/noavatar.png"} alt=""/>;
         },
     },
     {
@@ -62,29 +62,23 @@ const columns: GridColDef[] = [
         headerName: "Website",
         width: 150,
     },
-    // {
-    //     field: "instagram",
-    //     type: "string",
-    //     headerName: "Instagram",
-    //     width: 150,
-    // },
+    {
+        field: "location",
+        type: "string",
+        headerName: "Location",
+        width: 150,
+    },
+    {
+        field: "eventLoc",
+        type: "string",
+        headerName: "City",
+        width: 150,
+    },
     {
         field: "facebook",
         type: "string",
         headerName: "Facebook",
         width: 150,
-    },
-    {
-        field: "created_at",
-        type: "string",
-        headerName: "created At",
-        width: 200,
-    },
-    {
-        field: "updated_at",
-        type: "string",
-        headerName: "updated At",
-        width: 200,
     },
     // {
     //     field: "googleForm",
@@ -99,12 +93,12 @@ const Events = () => {
 
     // TEST THE API
 
-    const { isLoading, data } = useQuery({
-      queryKey: ["allevents"],
-      queryFn: () =>
-        fetch("https://sachadigi.com/freshdb/events").then(
-          (res) => res.json()
-        ),
+    const {isLoading, data} = useQuery({
+        queryKey: ["allevents"],
+        queryFn: () =>
+            fetch("https://sachadigi.com/freshdb/events").then(
+                (res) => res.json()
+            ),
     });
 
     const desiredFormat = _.map(data, (item) => ({
@@ -119,14 +113,13 @@ const Events = () => {
                 <button onClick={() => setOpen(true)}>Add New Events</button>
             </div>
             {/*<DataTable slug="events" columns={columns} rows={data} />*/}
-            {/* TEST THE API */}
 
             {isLoading ? (
-        "Loading..."
-      ) : (
-        <DataTable slug="events" columns={columns} rows={desiredFormat} />
-      )}
-            {open && <Add slug="event" columns={columns} setOpen={setOpen} />}
+                "Loading..."
+            ) : (
+                <DataTable slug="event" edit="event" delete="events" columns={columns} rows={desiredFormat}/>
+            )}
+            {open && <Add slug="event" add="events" columns={columns} setOpen={setOpen}/>}
         </div>
     );
 };
