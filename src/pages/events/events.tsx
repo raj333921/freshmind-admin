@@ -5,6 +5,7 @@ import Add from "../../components/add/Add";
 import {GridColDef} from "@mui/x-data-grid";
 import {useQuery} from "@tanstack/react-query";
 import * as _ from 'underscore';
+import {DB_API_SERVER} from "../../config/config.ts";
 
 const columns: GridColDef[] = [
     {
@@ -16,76 +17,76 @@ const columns: GridColDef[] = [
         field: "banner",
         headerName: "Image",
         width: 100,
+        editable:true,
         renderCell: (params) => {
             return <img src={params.row.img || "/noavatar.png"} alt=""/>;
         },
     },
     {
-        field: "eventName",
+        field: "name",
         type: "string",
         headerName: "Name",
         width: 150,
+        editable:true
     },
-    // {
-    //     field: "description",
-    //     type: "string",
-    //     headerName: "Description",
-    //     width: 250,
-    // },
     {
         field: "type",
         type: "string",
         headerName: "Type",
         width: 150,
+        editable:true
     },
     {
-        field: "eventStartDate",
-        type: "string",
+        field: "startDate",
+        type: 'date',
         headerName: "StartDate",
         width: 200,
+        editable:true,
+        valueGetter: (params) => new Date(params.row.startDate)
     },
     {
-        field: "eventEndDate",
-        type: "string",
+        field: "endDate",
+        type: 'date',
         headerName: "EndDate",
         width: 200,
+        editable:true,
+        valueGetter: (params) => new Date(params.row.endDate)
     },
     {
         field: "whatsapp",
         type: "string",
         headerName: "Whatsapp",
         width: 200,
+        editable:true
     },
     {
         field: "website",
         type: "string",
         headerName: "Website",
         width: 150,
+        editable:true
+    },
+    {
+        field: "mapLocation",
+        type: "string",
+        headerName: "Location",
+        width: 150,
+        editable:true
     },
     {
         field: "location",
         type: "string",
-        headerName: "Location",
-        width: 150,
-    },
-    {
-        field: "eventLoc",
-        type: "string",
         headerName: "City",
         width: 150,
+        editable:true
     },
     {
         field: "facebook",
         type: "string",
         headerName: "Facebook",
         width: 150,
+        editable:true
     },
-    // {
-    //     field: "googleForm",
-    //     type: "string",
-    //     headerName: "Google Form",
-    //     width: 150,
-    // },
 ];
 
 const Events = () => {
@@ -96,15 +97,26 @@ const Events = () => {
     const {isLoading, data} = useQuery({
         queryKey: ["allevents"],
         queryFn: () =>
-            fetch("https://sachadigi.com/freshdb/events").then(
+            fetch(`${DB_API_SERVER}/freshdb/events`).then(
                 (res) => res.json()
             ),
     });
 
-    const desiredFormat = _.map(data, (item) => ({
-        id: item.eventId,
-        ..._.omit(item, ['eventId']), // Keep other properties as they are
-    }));
+    // Function to update the string date to a formatted date string
+    function updateDateStringToDate(data:any) {
+        return _.map(data, (item) => {
+            const startDate = new Date(item.startDate);
+            const endDate = new Date(item.endDate);
+
+            return {
+                ...item,
+                startDate: startDate.toDateString(),
+                endDate: endDate.toDateString(),
+            };
+        });
+    }
+
+    const updatedData = updateDateStringToDate(data);
 
     return (
         <div className="events">
@@ -117,9 +129,9 @@ const Events = () => {
             {isLoading ? (
                 "Loading..."
             ) : (
-                <DataTable slug="event" edit="event" delete="events" columns={columns} rows={desiredFormat}/>
+                <DataTable slug="event" edit="event" delete="event" columns={columns} rows={updatedData}/>
             )}
-            {open && <Add slug="event" add="events" columns={columns} setOpen={setOpen}/>}
+            {open && <Add slug="event" add="event" columns={columns} setOpen={setOpen}/>}
         </div>
     );
 };

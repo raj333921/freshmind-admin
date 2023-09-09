@@ -4,62 +4,11 @@ import DataTable from "../../components/dataTable/DataTable";
 import Add from "../../components/add/Add";
 import {GridColDef} from "@mui/x-data-grid";
 import {useQuery} from "@tanstack/react-query";
-import * as _ from "underscore";
+// import * as _ from "underscore";
+import {DB_API_SERVER} from "../../config/config.ts";
+// import { AxiosResponse,AxiosError } from 'axios';
+// import axios from 'axios';
 //import {bookmarks} from "../../data.ts";
-
-const columns: GridColDef[] = [
-    {
-        field: "id",
-        headerName: "ID",
-        width: 90
-    },
-
-    // {
-    //     field: "indexesLoc",
-    //     headerName: "Image",-
-    //     width: 100,
-    //     renderCell: (params) => {
-    //         return <img src={params.row.img || "/noavatar.png"} alt="" />;
-    //     },
-    // },
-    {
-        field: "indexesName",
-        type: "string",
-        headerName: "Name",
-        width: 150,
-    },
-    {
-        field: "indexesDesc",
-        type: "string",
-        headerName: "Description",
-        width: 250,
-    },
-    {
-        field: "indexesURL",
-        type: "string",
-        headerName: "URL",
-        width: 150,
-    },
-    {
-        field: "indexesType",
-        type: "string",
-        headerName: "Type",
-        width: 200,
-    },
-    {
-        field: "categoryId",
-        type: "string",
-        headerName: "Category Id",
-        width: 100,
-    },
-    {
-        field: "indexesLoc",
-        type: "string",
-        headerName: "Location",
-        width: 150,
-    },
-
-];
 
 const Bookmarks = () => {
     const [open, setOpen] = useState(false);
@@ -69,15 +18,75 @@ const Bookmarks = () => {
     const {isLoading, data} = useQuery({
         queryKey: ["allindexes"],
         queryFn: () =>
-            fetch("https://sachadigi.com/freshdb/indexes").then(
+            fetch(`${DB_API_SERVER}/freshdb/indexes`).then(
                 (res) => res.json()
             ),
     });
 
-    const desiredFormat = _.map(data, (item) => ({
-        id: item.indexesId,
-        ..._.omit(item, ['indexesId']), // Keep other properties as they are
-    }));
+    // const apiUrl = `${DB_API_SERVER}/freshdb/categories`;
+    //
+    // let responseData:any;
+    //
+    // axios.get(apiUrl)
+    //     .then((response: AxiosResponse)  => {  responseData = response.data;        })
+    //     .catch((error:AxiosError) => {
+    //         console.error('Error:', error);
+    //     });
+    //
+    // const dropDown = _.pluck(responseData, 'name');
+
+    const columns: GridColDef[] = [
+        {
+            field: "id",
+            headerName: "ID",
+            width: 90,
+        },
+
+        {
+            field: "name",
+            type: "string",
+            headerName: "Name",
+            width: 150,
+            editable:true
+        },
+        {
+            field: "description",
+            type: "string",
+            headerName: "Description",
+            width: 250,
+            editable:true
+        },
+        {
+            field: "url",
+            type: "string",
+            headerName: "URL",
+            width: 150,
+            editable:true
+        },
+        {
+            field: "type",
+            type: "string",
+            headerName: "Type",
+            width: 100,
+            editable:true
+        },
+        {
+            field: "categoryId",
+            type: "string",
+            headerName: "Category",
+            width: 100,
+            editable:true
+        },
+        {
+            field: "indexesLoc",
+            type: "string",
+            headerName: "Location",
+            width: 150,
+            editable:true
+        },
+
+    ];
+
 
     return (
         <div className="bookmarks">
@@ -91,9 +100,9 @@ const Bookmarks = () => {
             {isLoading ? (
                 "Loading..."
             ) : (
-                <DataTable slug="indexe" edit="indexesInsert" delete="indexes" columns={columns} rows={desiredFormat}/>
+                <DataTable slug="indexe" edit="index" delete="index" columns={columns} rows={data}/>
             )}
-            {open && <Add slug="indexe" add="indexesInsert" columns={columns} setOpen={setOpen}/>}
+            {open && <Add slug="indexe" add="index" columns={columns} setOpen={setOpen}/>}
         </div>
     );
 };

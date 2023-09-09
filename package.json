@@ -12,9 +12,13 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.8",
+    "@mui/lab": "^5.0.0-alpha.143",
     "@mui/material": "^5.13.7",
     "@mui/x-data-grid": "^6.9.2",
     "@tanstack/react-query": "^4.29.19",
+    "@types/axios": "^0.14.0",
+    "axois": "^0.0.1-security",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
@@ -23,6 +27,7 @@
     "underscore": "^1.13.6"
   },
   "devDependencies": {
+    "@types/node": "^20.5.9",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@types/underscore": "^1.11.9",
