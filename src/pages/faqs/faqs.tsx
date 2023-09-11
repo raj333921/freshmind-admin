@@ -6,6 +6,7 @@ import {GridColDef} from "@mui/x-data-grid";
 import {useQuery} from "@tanstack/react-query";
 // import { faqs } from "../../data";
 import * as _ from "underscore";
+import {DB_API_SERVER} from "../../config/config.ts";
 
 const columns: GridColDef[] = [
     {
@@ -14,34 +15,39 @@ const columns: GridColDef[] = [
         width: 90
     },
     {
-        field: "faqQuestion",
+        field: "question",
         type: "string",
         headerName: "Question",
         width: 150,
+        editable:true
     },
     {
-        field: "faqAnswer",
+        field: "answer",
         type: "string",
         headerName: "Answer",
         width: 250,
+        editable:true
     },
     {
-        field: "faqAuthor",
+        field: "author",
         type: "string",
         headerName: "Author",
         width: 150,
+        editable:true
     },
     {
-        field: "faqCategory",
+        field: "category",
         type: "string",
         headerName: "Category",
         width: 150,
+        editable:true
     },
     {
-        field: "faqLoc",
+        field: "location",
         type: "String",
         headerName: "Location",
         width: 200,
+        editable:true
     },
 ];
 
@@ -53,15 +59,11 @@ const Faqs = () => {
     const {isLoading, data} = useQuery({
         queryKey: ["allfaqs"],
         queryFn: () =>
-            fetch("https://sachadigi.com/freshdb/faq").then(
+            fetch(`${DB_API_SERVER}/freshdb/faqs`).then(
                 (res) => res.json()
             ),
     });
 
-    const desiredFormat = _.map(data, (item) => ({
-        id: item.faqId,
-        ..._.omit(item, ['faqId']), // Keep other properties as they are
-    }));
 
     return (
         <div className="faqs">
@@ -75,9 +77,9 @@ const Faqs = () => {
             {isLoading ? (
                 "Loading..."
             ) : (
-                <DataTable slug="faq" edit="faq" delete="faq" columns={columns} rows={desiredFormat}/>
+                <DataTable slug="faq" edit="faq" delete="faq" columns={columns} rows={data}/>
             )}
-            {open && <Add slug="faq" add="faqInsert" columns={columns} setOpen={setOpen}/>}
+            {open && <Add slug="faq" add="faq" columns={columns} setOpen={setOpen}/>}
         </div>
     );
 };

@@ -5,6 +5,7 @@ import {useState} from "react";
 import Add from "../../components/add/Add";
 //import {users} from "../../data.ts";
 import {useQuery} from "@tanstack/react-query";
+import {DB_API_SERVER} from "../../config/config.ts";
 
 const columns: GridColDef[] = [
     {field: "id", headerName: "ID", width: 90},
@@ -21,18 +22,51 @@ const columns: GridColDef[] = [
         type: "string",
         headerName: "First name",
         width: 150,
+        editable:true
     },
     {
         field: "lastName",
         type: "string",
         headerName: "Last name",
         width: 150,
+        editable:true
     },
     {
-        field: "age",
-        type: "string",
+        field: "dob",
+        type: 'date',
         headerName: "Age",
         width: 150,
+        editable:true,
+        valueGetter: (params) => new Date(params.row.dob)
+    },
+    {
+        field: "email",
+        headerName: "Email",
+        width: 150,
+        editable:true,
+        cellClassName: (params) =>
+            params.row.emailError ? 'error-cell' : '',
+        renderCell: (params) => (
+            <div className="editable-cell">
+                {params.row.emailError ? (
+                    <div className="error-text">
+                        {params.row.emailError}
+                    </div>
+                ) : (
+                    params.row.email
+                )}
+            </div>
+        ),
+        renderEditCell: (params) => (
+            <input
+                type="text"
+                value={params.row.email}
+                onChange={(e) =>
+                    handleEmailChange(params, e.target.value)
+                }
+                onBlur={() => validateEmail(params.row)}
+            />
+        ),
     },
 
     // {
@@ -110,6 +144,25 @@ const columns: GridColDef[] = [
     // },
 ];
 
+
+const handleEmailChange = (params:any, value:any) => {
+    params.api.setEditCellValue({
+        id: params.id,
+        field: 'email',
+        value,
+    });
+};
+
+const validateEmail = (row: any) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+
+    if (!emailRegex.test(row.email)) {
+        row.emailError = 'Invalid email address';
+    } else {
+        row.emailError = null;
+    }
+};
+
 const Users = () => {
     const [open, setOpen] = useState(false);
 
@@ -118,7 +171,7 @@ const Users = () => {
     const {isLoading, data} = useQuery({
         queryKey: ["allusers"],
         queryFn: () =>
-            fetch("https://sachadigi.com/freshdb/users").then(
+            fetch(`${DB_API_SERVER}/freshdb/users`).then(
                 (res) => res.json()
             ),
     });
@@ -135,9 +188,9 @@ const Users = () => {
             {isLoading ? (
                 "Loading..."
             ) : (
-                <DataTable slug="user" edit="users" delete="users" columns={columns} rows={data}/>
+                <DataTable slug="user" edit="user" delete="user" columns={columns} rows={data}/>
             )}
-            {open && <Add slug="user" add="users" columns={columns} setOpen={setOpen}/>}
+            {open && <Add slug="user" add="user" columns={columns} setOpen={setOpen}/>}
         </div>
     );
 };

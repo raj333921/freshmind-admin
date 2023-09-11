@@ -2,6 +2,7 @@ import {GridColDef} from "@mui/x-data-grid";
 import "./add.scss";
 import React, {ChangeEvent, useState} from "react";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {DB_API_SERVER} from "../../config/config.ts";
 
 type Props = {
     slug: string;
@@ -17,21 +18,12 @@ const Add = (props: Props) => {
 
     const queryClient = useQueryClient();
     const [formData, setFormData] = useState<FormData>({});
-    const [formElements] = useState(props.columns);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setFormData({...formData, [name]: value});
     };
 
-    const formData2: Record<string, any> = {};
-    formElements.forEach((column) => {
-        formData2[column.field] = formData2[column.field] || "";
-    });
-
-    function sleep(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -39,13 +31,11 @@ const Add = (props: Props) => {
         mutation.mutate(formData); // Pass formData directly to the mutate function
         props.setOpen(false);
 
-        await sleep(1000);
-        window.location.reload();
     };
 
     const mutationFunction = async (formData: FormData) => {
         // Use formData as the request body
-        return fetch(`https://sachadigi.com/freshdb/${props.add}`, {
+        return fetch(`${DB_API_SERVER}/freshdb/${props.add}`, {
             method: "post",
             headers: {
                 Accept: "application/json",

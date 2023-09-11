@@ -5,38 +5,43 @@ import Add from "../../components/add/Add";
 import {GridColDef} from "@mui/x-data-grid";
 import {useQuery} from "@tanstack/react-query";
 import * as _ from "underscore";
+import {DB_API_SERVER} from "../../config/config.ts";
 //import {categories} from "../../data.ts";
 
 const columns: GridColDef[] = [
     {
         field: "id",
         headerName: "ID",
-        width: 90
+        width: 90,
     },
 
     {
-        field: "categoryName",
+        field: "name",
         type: "string",
         headerName: "Name",
         width: 150,
+        editable:true
     },
     {
-        field: "categoryDesc",
+        field: "description",
         type: "string",
         headerName: "Description",
         width: 250,
+        editable:true
     },
     {
-        field: "categoryType",
+        field: "type",
         type: "string",
         headerName: "Type",
         width: 200,
+        editable:true
     },
     {
-        field: "categoryLoc",
+        field: "location",
         type: "string",
         headerName: "Location",
         width: 150,
+        editable:true
     },
 
 ];
@@ -49,16 +54,10 @@ const Categories = () => {
     const {isLoading, data} = useQuery({
         queryKey: ["allCategories"],
         queryFn: () =>
-            fetch("https://sachadigi.com/freshdb/categories").then(
+            fetch(`${DB_API_SERVER}/freshdb/categories`).then(
                 (res) => res.json()
             ),
     });
-
-    const desiredFormat = _.map(data, (item) => ({
-        id: item.categoryId,
-        ..._.omit(item, ['categoryId']), // Keep other properties as they are
-    }));
-
     return (
         <div className="categories">
             <div className="info">
@@ -71,9 +70,9 @@ const Categories = () => {
             {isLoading ? (
                 "Loading..."
             ) : (
-                <DataTable slug="categories" edit="category" delete="category" columns={columns} rows={desiredFormat}/>
+                <DataTable slug="categories" edit="category" delete="category" columns={columns} rows={data}/>
             )}
-            {open && <Add slug="category" add="categoryInsert" columns={columns} setOpen={setOpen}/>}
+            {open && <Add slug="category" add="category" columns={columns} setOpen={setOpen}/>}
         </div>
     );
 };

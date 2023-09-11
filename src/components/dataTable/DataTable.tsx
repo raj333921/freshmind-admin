@@ -1,13 +1,24 @@
 import {
     DataGrid,
+    GridActionsCellItem,
     GridColDef,
-    GridToolbar, useGridApiRef,
+    GridEventListener,
+    GridRowEditStopReasons,
+    GridRowId,
+    GridRowModel,
+    GridRowModes,
+    GridRowModesModel,
+    GridToolbar,
+
 } from "@mui/x-data-grid";
 import "./dataTable.scss";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {useState} from "react";
-import Edit from "../edit/edit.tsx";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React from "react";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Close';
+import {DB_API_SERVER} from "../../config/config.ts";
 
 type Props = {
     columns: GridColDef[];
@@ -19,16 +30,11 @@ type Props = {
 
 const DataTable = (props: Props) => {
 
-    const [open, setOpen] = useState(false);
     const queryClient = useQueryClient();
 
-    function sleep(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     const mutationDelete = useMutation({
-        mutationFn: (id: number) => {
-            return fetch(`https://sachadigi.com/freshdb/${props.delete}/${id}`, {
+        mutationFn: (id: GridRowId) => {
+            return fetch(`${DB_API_SERVER}/freshdb/${props.delete}/${id}`, {
                 method: "delete",
             });
         },
@@ -37,69 +43,147 @@ const DataTable = (props: Props) => {
         }
     });
 
-    // const mutationEdit = useMutation({
-    //     mutationFn: (id: number) => {
-    //         return fetch(`https://sachadigi.com/freshdb/${props.delete}/${id}`, {
-    //             method: "delete",
-    //         });
-    //     },
-    //     onSuccess: () => {
-    //         queryClient.invalidateQueries([`all${props.slug}`]);
-    //     }
-    // });
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: GridRowId) => {
         //delete the item
         mutationDelete.mutate(id)
+    };
 
-        await sleep(1000);
+    const mutateRow = async (newRow:GridRowModel) => {
+        try {
+            const response = await fetch(`${DB_API_SERVER}/freshdb/${props.edit}`, {
+                method: "post",
+                body: JSON.stringify(newRow),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update row");
+            }
+            await queryClient.invalidateQueries([`all${props.slug}`]);
+            return response;
+        } catch (error) {
+            console.error("Error updating row:", error);
+            throw error; // Rethrow the error to be handled by React Query
+        }
+    };
+
+
+    const [rows, setRows] = React.useState(props.rows);
+    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+
+    const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+            event.defaultMuiPrevented = true;
+        }
+    };
+
+    const handleEditClick = (id: GridRowId) => () => {
+        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+    };
+
+    const handleSaveClick = (id: GridRowId) => () => {
+        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
         window.location.reload();
     };
 
-    const [editRowId, setEditRowId] = useState<number | null>(null);
-
-    const handleEdit = (rowId:number) => {
-        setEditRowId(rowId);
-        setOpen(true);
+    const handleDeleteClick = (id: GridRowId) => () => {
+        // @ts-ignore
+        setRows(rows.filter((row) => row.id !== id))
+        handleDelete(id);
     };
 
-    const actionColumn: GridColDef = {
-        field: "action",
-        headerName: "Action",
-        width: 150,
-        renderCell: (params) => {
+    const handleCancelClick = (id: GridRowId) => () => {
+        setRowModesModel({
+            ...rowModesModel,
+            [id]: { mode: GridRowModes.View, ignoreModifications: true },
+        });
 
-            return (
-                <div className="action">
-                    <img src="/view.svg" alt="" onClick={() => handleEdit(params.row.id)}/>
-                    <div className="delete" onClick={() => handleDelete(params.row.id)}>
-                        <img src="/delete.svg" alt=""/>
-                    </div>
-                </div>
-            );
+        // @ts-ignore
+        const editedRow = rows.find((row) => row.id === id);
+        // @ts-ignore
+        if (editedRow!.isNew) {
+            // @ts-ignore
+            setRows(rows.filter((row) => row.id !== id));
+        }
+    };
+
+    const processRowUpdate = React.useCallback(
+        async (newRow: GridRowModel) => {
+            const response = await mutateRow(newRow);
+            return response;
         },
+        [mutateRow],
+    );
+
+    const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
+        setRowModesModel(newRowModesModel);
     };
 
-    const apiRef = useGridApiRef();
 
-    const handleRowEditStart = (event:any) => {
-        event.defaultMuiPrevented = true;
+    const actionsCol: GridColDef={
+
+        field: 'actions',
+        type: 'actions',
+        headerName: 'Actions',
+        width: 100,
+        cellClassName: 'actions',
+        renderCell: (params) => {
+            const isInEditMode = rowModesModel[params.row.id]?.mode === GridRowModes.Edit;
+
+            if (isInEditMode) {
+                return [
+                    <GridActionsCellItem
+                        icon={<SaveIcon />}
+                        label="Save"
+                        sx={{
+                            color: 'primary.main',
+                        }}
+                        onClick={handleSaveClick(params.row.id)}
+                    />,
+                    <GridActionsCellItem
+                        icon={<CancelIcon />}
+                        label="Cancel"
+                        className="textPrimary"
+                        onClick={handleCancelClick(params.row.id)}
+                        color="inherit"
+                    />,
+                ];
+            }
+
+            return [
+                <GridActionsCellItem
+                    icon={<EditIcon />}
+                    label="Edit"
+                    className="textPrimary"
+                    onClick={handleEditClick(params.row.id)}
+                    color="inherit"
+                />,
+                <GridActionsCellItem
+                    icon={<DeleteIcon />}
+                    label="Delete"
+                    onClick={handleDeleteClick(params.row.id)}
+                    color="inherit"
+                />,
+            ];
+        },
+
     };
 
-    const handleRowEditStop = ( event:any) => {
-        event.defaultMuiPrevented = true;
-    };
 
     return (
         <div className="dataTable">
             <DataGrid
                 className="dataGrid"
                 rows={props.rows}
-                columns={[...props.columns, actionColumn]}
-                editMode={"row"}
-                apiRef={apiRef}
-                onRowEditStart={handleRowEditStart}
+                columns={[...props.columns, actionsCol]}
+                editMode="row"
+                rowModesModel={rowModesModel}
+                onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStop={handleRowEditStop}
+                processRowUpdate={processRowUpdate}
                 initialState={{
                     pagination: {
                         paginationModel: {
@@ -109,7 +193,8 @@ const DataTable = (props: Props) => {
                 }}
                 slots={{toolbar: GridToolbar}}
                 slotProps={{
-                    toolbar: {apiRef,
+                    toolbar: {
+                        setRows, setRowModesModel,
                         showQuickFilter: true,
                         quickFilterProps: {debounceMs: 500},
                     },
@@ -120,7 +205,6 @@ const DataTable = (props: Props) => {
                 disableDensitySelector
                 disableColumnSelector
             />
-            {open && <Edit slug={props.slug} edit={props.edit} columns={props.columns} setOpen={setOpen} rowId={editRowId} rows={props.rows}/>}
         </div>
     );
 };
