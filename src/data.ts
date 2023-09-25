@@ -15,6 +15,13 @@ export const menu = [
         id: 2,
         title: "lists",
         listItems: [
+
+            {
+                id: 3,
+                title: "Events",
+                url: "/events",
+                icon: "events.png",
+            },
             {
                 id: 1,
                 title: "Bookmarks",
@@ -32,12 +39,6 @@ export const menu = [
                 title: "Categories",
                 url: "/categories",
                 icon: "categories.png",
-            },
-            {
-                id: 3,
-                title: "Events",
-                url: "/events",
-                icon: "events.png",
             },
             {
                 id: 4,

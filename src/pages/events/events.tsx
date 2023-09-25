@@ -11,16 +11,23 @@ const columns: GridColDef[] = [
     {
         field: "id",
         headerName: "ID",
-        width: 90
+        width: 50
     },
     {
         field: "banner",
         headerName: "Image",
-        width: 100,
+        width: 80,
         editable:true,
         renderCell: (params) => {
             return <img src={params.row.img || "/noavatar.png"} alt=""/>;
         },
+    },
+    {
+        field: "price",
+        type: "string",
+        headerName: "Price",
+        width: 80,
+        editable:true
     },
     {
         field: "name",
@@ -40,7 +47,7 @@ const columns: GridColDef[] = [
         field: "startDate",
         type: 'date',
         headerName: "StartDate",
-        width: 200,
+        width: 150,
         editable:true,
         valueGetter: (params) => new Date(params.row.startDate)
     },
@@ -48,7 +55,7 @@ const columns: GridColDef[] = [
         field: "endDate",
         type: 'date',
         headerName: "EndDate",
-        width: 200,
+        width: 150,
         editable:true,
         valueGetter: (params) => new Date(params.row.endDate)
     },
@@ -56,35 +63,35 @@ const columns: GridColDef[] = [
         field: "whatsapp",
         type: "string",
         headerName: "Whatsapp",
-        width: 200,
+        width: 150,
         editable:true
     },
     {
         field: "website",
         type: "string",
         headerName: "Website",
-        width: 150,
+        width: 100,
         editable:true
     },
     {
         field: "mapLocation",
         type: "string",
         headerName: "Location",
-        width: 150,
+        width: 100,
         editable:true
     },
     {
         field: "location",
         type: "string",
         headerName: "City",
-        width: 150,
+        width: 50,
         editable:true
     },
     {
         field: "facebook",
         type: "string",
         headerName: "Facebook",
-        width: 150,
+        width: 100,
         editable:true
     },
 ];
@@ -104,7 +111,7 @@ const Events = () => {
 
     // Function to update the string date to a formatted date string
     function updateDateStringToDate(data:any) {
-        return _.map(data, (item) => {
+        return _.map(_.sortBy(data, 'startDate','DESC').reverse(), (item) => {
             const startDate = new Date(item.startDate);
             const endDate = new Date(item.endDate);
 
